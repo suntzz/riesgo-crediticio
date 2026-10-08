@@ -1,0 +1,56 @@
+{
+  "Ensemble_E_Ponderado_Optimo": {
+    "models": [
+      {
+        "name": "M1_Arch64_L2_s42",
+        "weight": 0.03228374005445314
+      },
+      {
+        "name": "M3_Arch32_LeakyReLU_s42",
+        "weight": 0.43392710998611794
+      },
+      {
+        "name": "M2_Arch64_ReLU_s42",
+        "weight": 0.10682623272565862
+      },
+      {
+        "name": "M4_Arch64_L2_s2026",
+        "weight": 0.18838040656174518
+      },
+      {
+        "name": "M5_Arch32_LeakyReLU_s2026",
+        "weight": 0.19386897853436882
+      },
+      {
+        "name": "M7_Arch48_ReLU_s42",
+        "weight": 0.04471353213765633
+      }
+    ],
+    "val_auc": 0.75333
+  },
+  "Ensemble_B_Top5_Validation": {
+    "models": [
+      {
+        "name": "M1_Arch64_L2_s42",
+        "weight": 0.2
+      },
+      {
+        "name": "M3_Arch32_LeakyReLU_s42",
+        "weight": 0.2
+      },
+      {
+        "name": "M2_Arch64_ReLU_s42",
+        "weight": 0.2
+      },
+      {
+        "name": "M4_Arch64_L2_s2026",
+        "weight": 0.2
+      },
+      {
+        "name": "M5_Arch32_LeakyReLU_s2026",
+        "weight": 0.2
+      }
+    ],
+    "val_auc": 0.7534
+  }
+}

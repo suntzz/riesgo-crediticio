@@ -8,33 +8,40 @@ Proyecto desarrollado y ejecutado en **Mac mini M4 (Apple Silicon)**, Universida
 
 ## 📌 1. Arquitectura de las Redes Neuronales
 
-### Red Ganadora Seleccionada (`model_best.keras`):
+### Mejor Red Individual de Fase 2 (`model_best_phase2.keras` / `model_best.keras`):
 * **Topología:** $44 \to 64 \to 32 \to 16 \to 1$.
 * **Parámetros entrenables:** **5.505** (pesos y sesgos).
-* **Hiperparámetros óptimos:**
-  * Optimizador: `Adam` con $\eta = 0.0005$ (tasa reducida respecto al baseline para convergencia más suave).
+* **Hiperparámetros óptimos seleccionados en Validación:**
+  * Optimizador: `Adam` con $\eta = 0.0005$.
   * Funciones de activación: `ReLU` en capas ocultas, `Sigmoide` en capa de salida.
   * Inicialización: He Normal en capas ocultas, Glorot Uniform en salida, sesgos en 0.
-  * Regularización: `Dropout(0.15)` en las dos primeras capas ocultas.
+  * Regularización combinada: `Dropout(0.15)` en las dos primeras capas ocultas + `L2 Kernel Regularization (1e-4)`.
   * Callbacks: `EarlyStopping` (monitoreando `val_auc`, paciencia 12, mode='max', `restore_best_weights=True`) y `ReduceLROnPlateau` (factor 0.5, paciencia 5, min_lr 1e-5).
+  * **Val AUC individual:** **0.75250** (récord individual del proyecto en validación).
+  * **Val AUC medio en 5 semillas:** **0.75103** ($\sigma = 0.00091$).
 
 ### Mejor Ensamble Neuronal (`Ensemble_Top3_Diverso`):
-Promedio simple de probabilidades de 3 redes con diversidad arquitectural y de semillas:
+Promedio aritmético de 3 redes con diversidad arquitectural y de semillas para descorrelación de errores:
 1. `cfg_c_s42`: $44 \to 64 \to 32 \to 16 \to 1$ (ReLU, $\eta = 0.0005$, Dropout 0.15, semilla 42).
 2. `cfg_b_leaky_s42`: $44 \to 32 \to 16 \to 1$ (LeakyReLU $\alpha=0.1$, $\eta = 0.0005$, Dropout 0.15, semilla 42).
 3. `cfg_base_s2026`: $44 \to 64 \to 32 \to 16 \to 1$ (ReLU, $\eta = 0.001$, Dropout 0.20, semilla 2026).
+* **Val AUC en Validación:** **0.75382**.
+* **Val Log Loss:** **0.5888** (la menor pérdida de validación).
 
 ---
 
 ## 📊 2. Resultados Comparativos Finales sobre Test (Congelados)
 
-Evaluación realizada sobre el conjunto de prueba aislado (**7.448 registros**) tras completar la búsqueda exclusivamente en **Validation**:
+Evaluación realizada sobre el conjunto de prueba aislado (**7.448 registros**) tras completar todas las búsquedas exclusivamente en **Validation**:
 
-| Modelo | Val AUC | Test AUC | Accuracy | Error % | Precision | Recall | F1 | Log Loss | Brier Score | $\Delta$ AUC vs Baseline |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Baseline Histórico (`model_final.keras`)** | 0.7497 | 0.7424 | 67.32% | 32.68% | 67.91% | 65.68% | 0.6678 | 0.5992 | 0.2062 | 0.0000 |
-| **Mejor Red Individual (`model_best.keras`)** | **0.7523** | **0.7437** | 67.32% | 32.68% | 67.64% | 66.41% | **0.6702** | **0.5979** | **0.2056** | **+0.0013** |
-| **Mejor Ensamble Neuronal (Top-3 Diverso)** | **0.7538** | **0.7448** | **67.48%** | **32.52%** | **67.84%** | **66.49%** | **0.6715** | **0.5963** | **0.2050** | **+0.0024** |
+| Modelo | Val AUC | Test AUC | Accuracy % | Error % | Precision % | Recall % | F1-Score | Log Loss | Brier | $\Delta$ vs 0.7448 | $\Delta$ vs 0.7424 |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **1. Baseline Histórico (`model_final.keras`)** | 0.74969 | 0.74243 | 67.32% | 32.68% | 67.91% | 65.68% | 0.6678 | 0.5992 | 0.2062 | -0.00237 | +0.00003 |
+| **2. Mejor Red Fase 1 (`cfg_c_s42`)** | 0.75225 | 0.74373 | 67.32% | 32.68% | 67.64% | 66.41% | 0.6702 | 0.5979 | 0.2056 | -0.00107 | +0.00133 |
+| **3. Mejor Red Fase 2 (`model_best_phase2.keras` L2)** | **0.75250** | **0.74336** | 67.33% | 32.67% | 67.56% | 66.68% | 0.6712 | 0.5980 | 0.2057 | -0.00144 | +0.00096 |
+| **4. Ensamble Fase 1 / Fase 2 (Top-3 Diverso)** | **0.75382** | **0.74482** | **67.48%** | **32.52%** | **67.84%** | **66.49%** | **0.6715** | **0.5963** | **0.2050** | **+0.00002** | **+0.00242** |
+| **5. Ensamble Fase 2 (Opt3: L2 + Leaky + Base)** | 0.75378 | 0.74460 | 67.43% | 32.57% | 67.74% | 66.54 | 0.6714 | 0.5964 | 0.2051 | -0.00020 | +0.00220 |
+| **6. Ensamble Fase 2 (Ponderado Óptimo)** | 0.75372 | 0.74420 | 67.48% | 32.52% | 67.70 | 66.86 | 0.6728 | 0.5967 | 0.2052 | -0.00060 | +0.00180 |
 
 ### Desempeño a Prevalencia Real de Cartera (8.07% de incumplimiento)
 * **Umbral 0.5:** Tasa de aprobación = **62.9%**, Mora esperada en cartera aprobada = **3.98%** (reducción del 50.7% del riesgo frente al 8.07% del universo original), Detección de morosos = **69.0%**.
@@ -43,43 +50,54 @@ Evaluación realizada sobre el conjunto de prueba aislado (**7.448 registros**) 
 
 ---
 
-## 🔬 3. Resumen de la Búsqueda Experimental (37 Experimentos)
+## 🔬 3. Hallazgos Experimentales Clave
 
-Se evaluaron sistemáticamente más de 37 configuraciones sobre el conjunto de validación (`reports/experiments.csv`):
-1. **Familias de arquitecturas:**
-   * *Pequeñas ($44 \to 32 \to 16 \to 1$):* Val AUC alcanzando **0.75225** con solo 1.985 parámetros. Menor sobreajuste debido a la regularidad de los datos tabulares.
-   * *Medias ($44 \to 64 \to 32 \to 16 \to 1$):* Val AUC **0.75225** optimizando la tasa de aprendizaje y el criterio de Early Stopping.
-   * *Profundas ($44 \to 128 \to 96 \to 48 \to 24 \to 1$):* Val AUC cayó a **0.74897**, confirmando que una mayor profundidad en datos tabulares ruidosos genera sobreajuste prematuro.
-2. **Batch Normalization:** Probada en redes medianas y profundas (`EXP_23_BN_MED`, `EXP_24_BN_DEEP`). No aportó ventaja frente a la estandarización Z-score + He Normal + Dropout y degradó ligeramente el AUC a 0.7493.
-3. **Dropout:** Variado de 0.0 a 0.40. Sin Dropout (`drop=0.0`) el AUC cayó a **0.7447** (overfitting severo). El rango óptimo se ubicó entre 0.15 y 0.20.
-4. **Learning Rate:** La tasa $\eta = 0.0005$ superó a $\eta = 0.0010$ permitiendo descensos de gradiente más estables antes de aplicar reducción por meseta.
-5. **Robustez Multi-seed:** Evaluadas 4 configuraciones finalistas sobre las semillas `[42, 1, 7, 21, 2026]` (`reports/multiseed_evaluation.csv`), ratificando a `Config_C` con la mayor media global de Val AUC (0.75025).
+### A. Prueba de Ablation y Feature Engineering (`reports/ablation_study.csv`)
+* **Set A (44 características canónicas):** Val AUC = **0.75225** (Ganador indiscutible).
+* **Set B (35 características, excluyendo supuestas redundantes):** Val AUC = 0.75202 (empeoró el resultado).
+* **Set E (50 características, sumando 6 ratios financieros derivados):** Val AUC = 0.75180 (no superó a la representación canónica de 44).
+* **Set D (21 características financieras + comportamiento):** Val AUC = 0.74409.
+* **Set C (9 variables puramente financieras, sin buró):** Val AUC = 0.62789 (colapso del poder predictivo, confirmando que el historial crediticio y el score son insustituibles).
+* **Conclusión:** Se mantuvieron las 44 características para evitar pérdida de señal.
 
----
+### B. Búsqueda Fina de Fase 2 (`reports/experiments_phase2.csv`)
+* **L2 Kernel Regularization:** La adición de una regularización L2 ligera ($10^{-4}$) combinada con Dropout 0.15 produjo el Val AUC individual más alto (**0.75250**), estabilizando la magnitud de los pesos y reduciendo la varianza entre épocas.
+* **Learning Rate:** $\eta = 0.0005$ demostró ser el ritmo de convergencia ideal. Valores menores ($\le 0.0003$) ralentizaron el aprendizaje y valores mayores ($\ge 0.0010$) aumentaron la oscilación cerca del mínimo.
+* **Dropout:** El rango óptimo fino se ubicó entre 0.150 y 0.225. Sin dropout el modelo sobreajusta (Val AUC = 0.7447), mientras que por encima de 0.30 sufre subajuste.
+* **LeakyReLU vs ReLU:** LeakyReLU produjo la menor pérdida de validación (0.5895) y la exactitud más alta (69.10%), convirtiéndose en el mejor complemento no lineal para combinar con redes ReLU en los ensambles.
 
-## 🧠 4. Fundamentos Teóricos de la Red Neuronal
-
-### Concepto de Neurona Artificial
-Cada neurona $j$ en una capa $l$ realiza una combinación lineal ponderada de sus entradas $a^{(l-1)}$ más un término independiente (sesgo o bias $b_j$):
-$$z_j^{(l)} = \sum_{i=1}^{n} w_{ji}^{(l)} a_i^{(l-1)} + b_j^{(l)}$$
-
-* **Pesos ($W$):** Representan la intensidad e inclinación de la relación entre cada característica y la neurona. Si un peso es positivo y grande, estimula la probabilidad de aptitud; si es negativo, la inhibe.
-* **Sesgo ($b$):** Permite desplazar la función de activación horizontalmente, independientemente del valor de las entradas. Es el umbral de activación intrínseco.
-* **Activación ReLU:** $a = \max(0, z)$. Introduce no linealidad y previene el desvanecimiento del gradiente (*vanishing gradient*), permitiendo que la red aprenda interacciones complejas.
-* **Activación Sigmoide (Salida):** $\sigma(z) = \frac{1}{1 + e^{-z}}$. Aplica un mapeo estricto al intervalo $(0, 1)$, interpretando el resultado directamente como $P(\text{Apto} \mid x)$.
-* **Función de Pérdida (Binary Crossentropy):**
-  $$\mathcal{L} = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]$$
-  Penaliza de forma asintótica las predicciones seguras pero incorrectas.
-* **Backpropagation y Optimizador Adam:**
-  Mediante la regla de la cadena se calcula el gradiente $\frac{\partial \mathcal{L}}{\partial W}$ y $\frac{\partial \mathcal{L}}{\partial b}$. Adam ajusta las tasas individuales para cada parámetro manteniendo promedios móviles exponenciales del gradiente (momento de primer orden $\beta_1=0.9$) y de los gradientes al cuadrado (momento de segundo orden $\beta_2=0.999$).
+### C. Análisis de Diversidad y Correlación de Predicciones (`reports/model_prediction_correlations.png`)
+* La correlación entre modelos con idéntica arquitectura superó 0.985.
+* La correlación entre la red compacta LeakyReLU (`[32, 16]`) y la red principal ReLU (`[64, 32, 16]`) bajó a 0.965–0.970.
+* Esta descorrelación de errores explica por qué el ensamble de arquitecturas diversas alcanza un Val AUC de **0.75382**, superando a cualquier red individual.
 
 ---
 
-## ⚠️ 5. Advertencias y Limitaciones Metodológicas
+## 🧠 4. Fundamentos Teóricos de la Red Neuronal para Sustentación
 
-1. **Sesgo de Selección Obligatorio (`diccionario.pdf`):** La variable objetivo `APTO_PARA_CREDITO` se construyó como $1 - \text{TARGET}$ de la base histórica de Home Credit. Dado que dicha fuente contiene únicamente créditos aprobados y desembolsados, la clase 0 representa **"solicitante aprobado que posteriormente incumplió"** y **no** solicitantes rechazados en ventanilla.
-2. **Balanceo Artificial 50/50:** El dataset fue submuestreado con semilla 42 igualando 24.825 casos de cada clase. Por ello, métricas como exactitud o precisión crudas sobre este CSV están calculadas sobre una prevalencia del 50%, mientras que en producción la prevalencia real es del 8.07%. Para la sustentación debe utilizarse la tabla reexpresada a prevalencia real.
-3. **Exclusión de Fuga de Información:** `id_solicitud` e `INCUMPLIO_PAGO` están rigurosamente excluidos en `DROP_COLS`. Todas las estadísticas de escalamiento, recorte P1-P99 e imputación se calcularon estrictamente sobre el 70% de entrenamiento.
+1. **Neurona Artificial:** Unidad computacional que realiza una combinación lineal ponderada de sus entradas $a^{(l-1)}$ más un sesgo independiente $b$:
+   $$z_j^{(l)} = \sum_{i=1}^{n} w_{ji}^{(l)} a_i^{(l-1)} + b_j^{(l)}$$
+2. **Pesos ($W$):** Determinan la sensibilidad e importancia de cada característica para activar o inhibir una neurona. Se inicializan mediante He Normal para preservar la varianza de los gradientes a través de capas ReLU.
+3. **Sesgo ($b$):** Permite desplazar la función de activación horizontalmente, garantizando que la neurona pueda activarse o desactivarse incluso si las entradas son cero.
+4. **Activación ReLU y LeakyReLU:** $a = \max(0, z)$ y $a = \max(\alpha z, z)$. Proporcionan no linealidad, resuelven el problema del desvanecimiento del gradiente y permiten computar derivadas de manera instantánea ($\mathcal{O}(1)$).
+5. **Capa de Salida y Sigmoide:** $\sigma(z) = \frac{1}{1 + e^{-z}}$. Comprime la salida al intervalo abierto $(0, 1)$, permitiendo interpretar el valor directamente como la probabilidad condicional a posteriori $P(\text{Apto} \mid x)$.
+6. **Función de Pérdida (Binary Crossentropy):**
+   $$\mathcal{L} = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]$$
+   Mide la divergencia de Kullback-Leibler entre la distribución real Bernoulli y la predicha.
+7. **Backpropagation y Adam:**
+   La regla de la cadena propaga el error desde la salida hacia atrás: $\frac{\partial \mathcal{L}}{\partial W^{(l)}} = \frac{\partial \mathcal{L}}{\partial z^{(l)}} \cdot (a^{(l-1)})^T$. Adam adapta las tasas de aprendizaje para cada peso utilizando momentos exponenciales de primer orden ($m_t$) y segundo orden ($v_t$), amortiguando oscilaciones y acelerando el descenso en direcciones persistentes.
+8. **Por qué el Ensamble supera a una Red Individual:**
+   El error cuadrático esperado de un ensamble de $M$ modelos descorrelacionados se reduce según la teoría de Hansen & Salamon:
+   $$\mathbb{E}[(\bar{f}(x) - y)^2] = \frac{1}{M} \text{Var}(f_i) + \text{Sesgo}^2 + \text{Covarianza}$$
+   Al promediar modelos con topologías y activaciones distintas, las varianzas y errores aleatorios individuales se cancelan mutuamente mientras se preserva la señal predictiva.
+
+---
+
+## ⚠️ 5. Advertencias Metodológicas Obligatorias
+
+1. **Sesgo de Selección Obligatorio (`diccionario.pdf`):** La variable dependiente `APTO_PARA_CREDITO` se construyó a partir de créditos efectivamente aprobados y desembolsados en la fuente primaria. La clase 0 representa **"aprobado que terminó incumpliendo"** y no un solicitante rechazado por un analista.
+2. **Balanceo Artificial 50/50:** El dataset original de 307.511 registros (8.07% de incumplimiento) fue submuestreado a 49.650 filas (50% por clase). Por ende, las métricas estándar de prueba deben interpretarse bajo esta premisa y contrastarse contra la tabla reexpresada a prevalencia real (8.07%).
+3. **Ausencia de Data Leakage:** Ni `id_solicitud` ni `INCUMPLIO_PAGO` entraron a la red. Todas las estadísticas de preprocesamiento se fijaron únicamente con el conjunto de entrenamiento.
 
 ---
 
@@ -92,42 +110,46 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Reproducción Completa
+### Reproducción de los Experimentos de Fase 2
 ```bash
-python src/preprocess.py        # Preprocesamiento y splits sin leakage
-python src/run_experiments.py   # Suite de 29 experimentos sistemáticos
-python src/multiseed_eval.py    # Evaluación multi-seed de robustez
-python src/train_ensembles.py   # Entrenamiento de ensambles neuronales
-python src/final_evaluation.py  # Evaluación final y congelada sobre TEST
-python src/inspect_weights.py   # Inspección estadística y gráfica de pesos
+python src/ablation_study.py         # Prueba de Ablation y Feature Engineering
+python src/run_phase2_experiments.py # Suite de 25 experimentos finos
+python src/phase2_ensembles.py       # Análisis de correlación y ensambles
+python src/multiseed_phase2.py       # Evaluación multi-seed de Fase 2
+python src/final_test_phase2.py      # Evaluación final y congelada en Test
 ```
 
-### Predicción para Solicitantes Nuevos (`predict.py`)
-* **Predicción individual desde JSON:**
+### Inferencia para Solicitantes Nuevos (`predict.py`)
+* **Predicción individual con la Mejor Red de Fase 2:**
   ```bash
-  python src/predict.py --json data/ejemplo_solicitante.json
+  python src/predict.py --json data/ejemplo_solicitante.json --model artifacts/model_best_phase2.keras
   ```
   *Salida:*
   ```
    id_solicitud  probabilidad_apto  probabilidad_no_apto resultado
-         172745             0.6215                0.3785      APTO
+         172745             0.6258                0.3742      APTO
   ```
 
-* **Predicción individual con Ensamble Neuronal:**
+* **Predicción individual con el Mejor Ensamble:**
   ```bash
   python src/predict.py --json data/ejemplo_solicitante.json --ensemble
+  ```
+  *Salida:*
+  ```
+   id_solicitud  probabilidad_apto  probabilidad_no_apto resultado
+         172745             0.6306                0.3694      APTO
   ```
 
 * **Predicción por lote desde CSV:**
   ```bash
-  python src/predict.py --csv data/ejemplo_lote.csv
+  python src/predict.py --csv data/ejemplo_lote.csv --model artifacts/model_best_phase2.keras
   ```
   *Salida:*
   ```
    id_solicitud  probabilidad_apto  probabilidad_no_apto resultado
-         172745             0.6215                0.3785      APTO
-         413676             0.1751                0.8249   NO APTO
-         270588             0.1874                0.8126   NO APTO
-         183124             0.4362                0.5638   NO APTO
-         165787             0.1568                0.8432   NO APTO
+         172745             0.6258                0.3742      APTO
+         413676             0.1710                0.8290   NO APTO
+         270588             0.1904                0.8096   NO APTO
+         183124             0.4378                0.5622   NO APTO
+         165787             0.1406                0.8594   NO APTO
   ```

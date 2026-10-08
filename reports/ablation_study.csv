@@ -1,0 +1,6 @@
+set_name,description,n_features,val_auc,val_accuracy,val_f1,val_log_loss
+Set_A_44_Features,Todas las 44 caracteristicas canonicas,44,0.75225,0.6871,0.687,0.5909
+Set_B_Sin_Redundantes,"Excluyendo ingreso_disponible, cuota_estimada, personas_a_cargo, tipo_vivienda",35,0.75202,0.6875,0.691,0.591
+Set_E_44_Mas_6_Ratios,44 caracteristicas + 6 ratios financieros derivados,50,0.7518,0.6881,0.6924,0.5904
+Set_D_Financieras_Comportamiento,Variables financieras + comportamiento crediticio completo,21,0.74409,0.6835,0.6859,0.5975
+Set_C_Solo_Financieras,Solo variables financieras principales,9,0.62789,0.5902,0.6258,0.6691
