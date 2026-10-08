@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import (
     accuracy_score,
+    average_precision_score,
     brier_score_loss,
     f1_score,
     log_loss,
@@ -42,6 +43,7 @@ def build_custom_model(
     l2_reg: float = 0.0,
     optimizer_name: str = "Adam",
     learning_rate: float = 0.001,
+    weight_decay: float = 1e-4,
 ) -> keras.Model:
     regularizer = keras.regularizers.l2(l2_reg) if l2_reg > 0 else None
     inputs = keras.Input(shape=(n_features,), name="entrada")
@@ -65,11 +67,15 @@ def build_custom_model(
                 x = keras.layers.Activation("relu", name=f"act_{idx+1}")(x)
             elif activation == "leaky_relu":
                 x = keras.layers.LeakyReLU(negative_slope=0.1, name=f"act_{idx+1}")(x)
+            elif activation == "elu":
+                x = keras.layers.Activation("elu", name=f"act_{idx+1}")(x)
+            elif activation == "gelu":
+                x = keras.layers.Activation("gelu", name=f"act_{idx+1}")(x)
         else:
-            if activation == "relu":
+            if activation in ["relu", "elu", "gelu"]:
                 x = keras.layers.Dense(
                     units,
-                    activation="relu",
+                    activation=activation,
                     use_bias=True,
                     kernel_initializer="he_normal",
                     bias_initializer="zeros",
@@ -117,7 +123,7 @@ def build_custom_model(
         )
     elif optimizer_name == "AdamW":
         opt = keras.optimizers.AdamW(
-            learning_rate=learning_rate, weight_decay=1e-4, beta_1=0.9, beta_2=0.999, epsilon=1e-8
+            learning_rate=learning_rate, weight_decay=weight_decay, beta_1=0.9, beta_2=0.999, epsilon=1e-8
         )
     else:
         raise ValueError(f"Optimizador desconocido: {optimizer_name}")
@@ -145,6 +151,7 @@ def run_single_experiment(
     l2_reg: float = 0.0,
     optimizer_name: str = "Adam",
     learning_rate: float = 0.001,
+    weight_decay: float = 1e-4,
     batch_size: int = 128,
     seed: int = 42,
     es_monitor: str = "val_auc",
@@ -152,6 +159,7 @@ def run_single_experiment(
     es_patience: int = 12,
     max_epochs: int = 100,
     save_model: bool = False,
+    save_dir: Path = None,
 ) -> dict:
     keras.utils.set_random_seed(seed)
     d = np.load(C.ARTIFACTS / "splits.npz")
@@ -168,9 +176,13 @@ def run_single_experiment(
         l2_reg=l2_reg,
         optimizer_name=optimizer_name,
         learning_rate=learning_rate,
+        weight_decay=weight_decay,
     )
 
-    checkpoint_path = C.ARTIFACTS / f"candidate_{exp_id}.keras"
+    if save_dir is None:
+        save_dir = C.ARTIFACTS
+    checkpoint_path = save_dir / f"candidate_{exp_id}.keras"
+
     callbacks = [
         keras.callbacks.EarlyStopping(
             monitor=es_monitor,
@@ -206,6 +218,7 @@ def run_single_experiment(
     pred_val = (p_val >= 0.5).astype(int)
 
     val_auc = float(roc_auc_score(y_val, p_val))
+    val_pr_auc = float(average_precision_score(y_val, p_val))
     val_acc = float(accuracy_score(y_val, pred_val))
     val_prec = float(precision_score(y_val, pred_val, zero_division=0))
     val_rec = float(recall_score(y_val, pred_val, zero_division=0))
@@ -226,33 +239,32 @@ def run_single_experiment(
         model.save(checkpoint_path)
 
     res = {
-        "exp_id": exp_id,
+        "experiment_id": exp_id,
+        "fase": "Fase_3",
         "family": family,
         "description": description,
-        "seed": seed,
-        "layers": str(layers),
-        "num_layers": len(layers),
-        "params": model.count_params(),
-        "activation": activation,
+        "arquitectura": str(layers),
+        "número_de_parámetros": model.count_params(),
+        "activación": activation,
+        "learning_rate": learning_rate,
         "dropout": dropout_rate,
         "dropout_layers": dropout_layers,
-        "batch_norm": use_batch_norm,
-        "l2_reg": l2_reg,
+        "L2": l2_reg,
         "optimizer": optimizer_name,
-        "learning_rate": learning_rate,
         "batch_size": batch_size,
-        "es_monitor": es_monitor,
+        "patience": es_patience,
+        "seed": seed,
+        "Val_AUC": round(val_auc, 5),
+        "Val_Loss": round(val_loss, 4),
+        "Accuracy": round(val_acc * 100, 2),
+        "Precision": round(val_prec * 100, 2),
+        "Recall": round(val_rec * 100, 2),
+        "F1": round(val_f1, 4),
+        "PR_AUC": round(val_pr_auc, 5),
+        "Brier": round(val_brier, 4),
+        "mejor_época": best_epoch,
         "epochs_trained": epochs_trained,
-        "best_epoch": best_epoch,
-        "train_loss": round(train_loss, 4),
-        "val_loss": round(val_loss, 4),
-        "val_auc": round(val_auc, 5),
-        "val_accuracy": round(val_acc, 4),
-        "val_precision": round(val_prec, 4),
-        "val_recall": round(val_rec, 4),
-        "val_f1": round(val_f1, 4),
-        "val_log_loss": round(val_ll, 4),
-        "val_brier": round(val_brier, 4),
-        "train_time_sec": round(elapsed, 1),
+        "tiempo_entrenamiento": round(elapsed, 1),
+        "p_val": p_val,
     }
     return res
