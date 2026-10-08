@@ -1,0 +1,4 @@
+Modelo,Val AUC,Test AUC,Accuracy,Error %,Precision,Recall,F1,Log Loss,Brier,Dif vs Baseline (AUC)
+Baseline (44->64->32->16->1),0.7497,0.7424,67.32,32.68,67.91,65.68,0.6678,0.5992,0.2062,0.0
+Mejor Red Individual (Optimizada 44->64->32->16->1),0.7523,0.7437,67.32,32.68,67.64,66.41,0.6702,0.5979,0.2056,0.0013
+Mejor Ensamble Neuronal (Top-3 Diverso),0.7538,0.7448,67.48,32.52,67.84,66.49,0.6715,0.5963,0.205,0.0024

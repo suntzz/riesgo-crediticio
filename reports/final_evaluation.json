@@ -1,0 +1,104 @@
+{
+  "Baseline (44->64->32->16->1)": {
+    "val_auc": 0.7496906837717062,
+    "test_auc": 0.742433431764927,
+    "accuracy": 0.6732008592910849,
+    "error": 0.32679914070891514,
+    "precision": 0.6790671848972792,
+    "recall": 0.6568206229860365,
+    "f1": 0.6677586677586678,
+    "log_loss": 0.5992203950881958,
+    "brier": 0.2062470018863678,
+    "confusion_matrix": {
+      "TN": 2568,
+      "FP": 1156,
+      "FN": 1278,
+      "TP": 2446
+    },
+    "a_prevalencia_real_8pct": {
+      "0.5": {
+        "tasa_aprobacion": 0.6288660042964554,
+        "mora_en_aprobados": 0.03983488599199708,
+        "malos_detectados": 0.6895810955961332
+      },
+      "0.6": {
+        "tasa_aprobacion": 0.48418660042964556,
+        "mora_en_aprobados": 0.0307921160035137,
+        "malos_detectados": 0.8152524167561761
+      },
+      "0.7": {
+        "tasa_aprobacion": 0.25776697099892587,
+        "mora_en_aprobados": 0.019335901730574142,
+        "malos_detectados": 0.9382384532760473
+      }
+    }
+  },
+  "Mejor Red Individual (Optimizada 44->64->32->16->1)": {
+    "val_auc": 0.7522536411825004,
+    "test_auc": 0.7437267525303977,
+    "accuracy": 0.6732008592910849,
+    "error": 0.32679914070891514,
+    "precision": 0.6764223194748359,
+    "recall": 0.6640708915145005,
+    "f1": 0.670189701897019,
+    "log_loss": 0.597853422164917,
+    "brier": 0.2056123912334442,
+    "confusion_matrix": {
+      "TN": 2541,
+      "FP": 1183,
+      "FN": 1251,
+      "TP": 2473
+    },
+    "a_prevalencia_real_8pct": {
+      "0.5": {
+        "tasa_aprobacion": 0.6361162728249193,
+        "mora_en_aprobados": 0.04030065469288027,
+        "malos_detectados": 0.6823308270676691
+      },
+      "0.6": {
+        "tasa_aprobacion": 0.47155257787325455,
+        "mora_en_aprobados": 0.028905759467007366,
+        "malos_detectados": 0.8310955961331901
+      },
+      "0.7": {
+        "tasa_aprobacion": 0.26664538131041887,
+        "mora_en_aprobados": 0.01958604912811582,
+        "malos_detectados": 0.9352846401718582
+      }
+    }
+  },
+  "Mejor Ensamble Neuronal (Top-3 Diverso)": {
+    "val_auc": 0.7538241323926831,
+    "test_auc": 0.7448205156900229,
+    "accuracy": 0.674812030075188,
+    "error": 0.325187969924812,
+    "precision": 0.6783561643835616,
+    "recall": 0.664876476906552,
+    "f1": 0.671548684567399,
+    "log_loss": 0.5963106155395508,
+    "brier": 0.20503361523151398,
+    "confusion_matrix": {
+      "TN": 2550,
+      "FP": 1174,
+      "FN": 1248,
+      "TP": 2476
+    },
+    "a_prevalencia_real_8pct": {
+      "0.5": {
+        "tasa_aprobacion": 0.6366618152524167,
+        "mora_en_aprobados": 0.03995978622047074,
+        "malos_detectados": 0.6847475832438239
+      },
+      "0.6": {
+        "tasa_aprobacion": 0.48668533834586464,
+        "mora_en_aprobados": 0.030188761279004238,
+        "malos_detectados": 0.817937701396348
+      },
+      "0.7": {
+        "tasa_aprobacion": 0.28787140171858216,
+        "mora_en_aprobados": 0.02070131976335432,
+        "malos_detectados": 0.9261546723952739
+      }
+    }
+  }
+}
