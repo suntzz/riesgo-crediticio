@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrandLogo } from './BrandLogo';
 import type { PredictionResult, ApplicantFormData } from '../types';
 
 interface PrintReportProps {
@@ -13,13 +14,16 @@ export const PrintReport: React.FC<PrintReportProps> = ({ result, applicant }) =
     <div className="hidden print:block p-8 bg-white text-slate-900 font-sans">
       {/* Print Header */}
       <div className="border-b-2 border-slate-900 pb-4 mb-6 flex justify-between items-start">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">
-            CrediRisk AI — Informe de Evaluación Crediticia
-          </h1>
-          <p className="text-xs text-slate-600 mt-1">
-            Sistema de Calificación mediante Redes Neuronales Profundas (Deep Learning)
-          </p>
+        <div className="flex items-center space-x-3">
+          <BrandLogo size="md" variant="mono" />
+          <div>
+            <h1 className="text-xl font-black tracking-tight text-slate-900 uppercase">
+              CrediRisk — Informe de Evaluación Crediticia
+            </h1>
+            <p className="text-xs text-slate-600 mt-0.5">
+              Redes Neuronales Profundas para Evaluación Crediticia
+            </p>
+          </div>
         </div>
         <div className="text-right text-xs">
           <div><strong>Solicitud ID:</strong> #{result.id_solicitud}</div>

@@ -6,6 +6,7 @@ import {
   Users
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
+import { BrandLogo } from './BrandLogo';
 
 interface AboutUsViewProps {
   onBackToHome: () => void;
@@ -48,6 +49,7 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({
             </button>
             <span className="text-slate-300 dark:text-slate-700">|</span>
             <div className="flex items-center space-x-2">
+              <BrandLogo size="xs" />
               <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white">
                 CrediRisk
               </span>

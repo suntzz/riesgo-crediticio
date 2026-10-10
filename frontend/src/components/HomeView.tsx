@@ -5,6 +5,7 @@ import {
   Cpu
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
+import { BrandLogo } from './BrandLogo';
 import type { HealthStatus, ViewMode } from '../types';
 
 interface HomeViewProps {
@@ -20,10 +21,8 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectView, health }) => {
       {/* Minimal Top Bar */}
       <header className="w-full max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
         {/* Brand */}
-        <div className="flex items-center space-x-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 dark:bg-blue-500 text-white flex items-center justify-center font-bold text-sm shadow-sm">
-            CR
-          </div>
+        <div className="flex items-center space-x-3">
+          <BrandLogo size="sm" />
           <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
             CrediRisk
           </span>
@@ -55,6 +54,11 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectView, health }) => {
       <main className="w-full max-w-4xl mx-auto px-6 py-12 flex-1 flex flex-col justify-center">
         {/* Heading */}
         <div className="text-center max-w-2xl mx-auto mb-14">
+          <div className="inline-flex items-center justify-center mb-5">
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+              <BrandLogo size="lg" />
+            </div>
+          </div>
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/50 mb-4">
             <Cpu className="w-3.5 h-3.5" />
             <span>Deep Learning</span>

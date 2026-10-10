@@ -2,6 +2,20 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+:root {
+  --brand-navy: #0B1220;
+  --brand-blue: #2563EB;
+  --brand-cyan: #38BDF8;
+  --brand-light: #F1F5F9;
+}
+
+.dark {
+  --brand-navy: #0B1220;
+  --brand-blue: #3B82F6;
+  --brand-cyan: #38BDF8;
+  --brand-light: #0B1220;
+}
+
 @layer base {
   html {
     color-scheme: light;
@@ -18,7 +32,7 @@
     transition: background-color 0.2s ease, color 0.2s ease;
   }
   html.dark body {
-    background-color: #0b101b;
+    background-color: #0b1220;
     color: #f8fafc;
   }
 }
