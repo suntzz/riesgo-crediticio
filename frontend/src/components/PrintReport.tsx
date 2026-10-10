@@ -18,7 +18,7 @@ export const PrintReport: React.FC<PrintReportProps> = ({ result, applicant }) =
           <BrandLogo size="md" variant="mono" />
           <div>
             <h1 className="text-xl font-black tracking-tight text-slate-900 uppercase">
-              CrediRisk — Informe de Evaluación Crediticia
+              CrediRisk - Informe de Evaluación Crediticia
             </h1>
             <p className="text-xs text-slate-600 mt-0.5">
               Redes Neuronales Profundas para Evaluación Crediticia
