@@ -4,6 +4,9 @@ venv/
 ENV/
 env/
 
+# Dependencias Node
+node_modules/
+
 # Caché de Python
 __pycache__/
 *.py[cod]

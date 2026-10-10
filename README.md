@@ -318,3 +318,27 @@ pip install -r requirements.txt
   ```bash
   python src/predict.py --csv data/ejemplo_lote.csv --model artifacts/model_best_phase2.keras
   ```
+
+### Plataforma Web y API de Inferencia (Frontend & Backend)
+
+Para interactuar de forma gráfica y amigable con el modelo neuronal de riesgo crediticio, el proyecto incluye una interfaz web profesional construida con **React + TypeScript + Tailwind CSS** y un backend de inferencia rápida en **FastAPI**:
+
+* **Iniciar la plataforma completa (un solo comando):**
+  ```bash
+  ./run_app.sh
+  ```
+  O alternativamente mediante uvicorn:
+  ```bash
+  .venv/bin/uvicorn src.api:app --host 0.0.0.0 --port 8000
+  ```
+  * **Interfaz Web:** [http://localhost:8000](http://localhost:8000)
+  * **Documentación Interactiva Swagger / OpenAPI:** [http://localhost:8000/docs](http://localhost:8000/docs)
+  * **Endpoint de Salud / Health Check:** [http://localhost:8000/api/health](http://localhost:8000/api/health)
+
+* **Modo Desarrollo del Frontend (Vite):**
+  ```bash
+  cd frontend
+  npm run dev
+  ```
+  Disponible en [http://localhost:5173](http://localhost:5173) con proxy transparente hacia la API backend en el puerto `8000`.
+
